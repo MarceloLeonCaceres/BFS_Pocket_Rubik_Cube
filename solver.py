@@ -61,9 +61,9 @@ def shortest_path(start, end):
         except Exception as e:
             print(e.args)
         
-
     return None
 
+# Saludos desde github, website
 
 def next_positions(position):
     siguientes = set()
