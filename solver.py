@@ -64,6 +64,8 @@ def shortest_path(start, end):
     return None
 
 # Saludos desde github, website
+# Ahora estos saludos (linea 67y siguientes) vienen del branch pcOficina
+# Los saludos de la línea 66 eran del branch master
 
 def next_positions(position):
     siguientes = set()
