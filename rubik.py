@@ -153,7 +153,8 @@ Ui = perm_inverse(U)
 
 # All 6 possible moves (assuming that the lower-bottom-right cubie
 # stays fixed).
-quarter_twists = (F, Fi, L, Li, U, Ui)
+# quarter_twists = (F, Fi, L, Li, U, Ui)
+quarter_twists = (Ui, Fi)
 
 quarter_twists_names = {}
 quarter_twists_names[F] = 'F'
@@ -162,6 +163,14 @@ quarter_twists_names[L] = 'L'
 quarter_twists_names[Li] = 'Li'
 quarter_twists_names[U] = 'U'
 quarter_twists_names[Ui] = 'Ui'
+
+movimientos = {}
+movimientos['F'] = F
+movimientos['Fi'] = Fi
+movimientos['L'] = L
+movimientos['Li'] = Li
+movimientos['U'] = U
+movimientos['Ui'] = Ui
 
 def input_configuration():
     """
