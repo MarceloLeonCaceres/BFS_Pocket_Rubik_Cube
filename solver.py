@@ -13,33 +13,46 @@ def shortest_path(start, end):
     print(f"shortest_path: end: {end}")    
 
     print()
-    for movimiento in rubik.quarter_twists:
-        estado = rubik.perm_apply(movimiento,  end)
-        print(f"movimiento: {rubik.quarter_twists_names[movimiento]} estado: {estado}")
+                                           
+                                                   
+                                                                                       
 
     path = []
     inicio = util.Node(start, None, None)
-    print(f"inicio: {inicio.state}, {inicio.parent}, {inicio.action}")
+    print(f"Nodo inicio: {inicio.state}, {inicio.parent}, {inicio.action}")
     frontierFIFO = util.QueueFrontier()
     frontierFIFO.add(inicio)
     explorados = []
 
+    print()
     print(f"frontierFIFO {frontierFIFO}")
     print(f"explorados {explorados}")
     print(f"path {path}")
+    counter = 0
+    SuperCounter = 0
+    print()
+
+    # path.append(rubik.Ui)
+    # path.append(rubik.Fi)
+    # return path
 
     while frontierFIFO:
         nodo = frontierFIFO.remove()
-        print(f"nodo {nodo.state}, {nodo.parent}, {nodo.action}")
-        print(rubik.perm_to_string(end))
-        if nodo.state == rubik.perm_to_string(end):
+        SuperCounter += 1
+        print()
+        print(f"SuperCounter {SuperCounter}")
+        print(f"nodo {nodo.state}, parent: {nodo.parent}, action: {nodo.action}")
+        print(f"end: (string) {rubik.perm_to_string(end)}")
+        if SuperCounter == 41:
+            return None
+        if nodo.state == rubik.perm_to_string(end) or nodo.state == end or nodo.state == tuple(end):
             print()
-            print(f"Encontró la solución!!")
+            print(f"Encontro la solucion!!")
             print()
             actions = []
             cells = []
             while nodo.parent is not None:
-                actions.append(nodo.action)
+                actions.append(rubik.movimientos[nodo.action])
                 cells.append(nodo.state)
                 dupla = (nodo.action, nodo.state)
                 path.append(dupla)
@@ -47,37 +60,56 @@ def shortest_path(start, end):
             actions.reverse()
             cells.reverse()
             path.reverse()
-            return path
+            return actions
 
         try:
             explorados.append(nodo.state)
-            print(f"explorados 2 {explorados}")
+            print(f"explora2 {explorados}")
             for action, state in next_positions(nodo.state):
+                print()
+                counter += 1
+                print(f"counter {counter}: ")
                 print(f"action: {action}, state{state}")
+                if counter == 41:
+                    return None
+                if state in explorados:
+                    print(f"Este ya esta explorado: {state}")
+                elif frontierFIFO.contains_state(state): 
+                    print(f"FrontierFIFO: {state}")
                 if not frontierFIFO.contains_state(state) and state not in explorados:
-                    print(f"if not frontierFIFO.contains_state(state) and state not in explorados")
+                    print(f"if not frontierFIFO.contains_state(state) ... len = {frontierFIFO.len()}")
                     child = util.Node(state=state, parent=nodo, action=action)
+                    print(f"child.state = {child.state} child.parent = {child.parent.state} child.action = {child.action}")
                     frontierFIFO.add(child)
+                print()
         except Exception as e:
             print(e.args)
         
+
     return None
 
-# Saludos desde github, website
+                               
 
 def next_positions(position):
     siguientes = set()
+    print()
+    print("Next_positions: Inicio")
+    print(f"position: {position}")
     for movimiento in rubik.quarter_twists:
         print(f"movimiento: {rubik.quarter_twists_names[movimiento]}  ")
         next = rubik.perm_apply(movimiento, position)
         sNext = rubik.perm_to_string(next)
+        tupleNext = tuple(next)
         print(f"next: {next}")
-        print(f"sNext: {sNext}")
-        tupla =(rubik.quarter_twists_names[movimiento], sNext)
+        print(f"tupleNext: {tupleNext}")
+        # tupla = (rubik.quarter_twists_names[movimiento], sNext)
+        tupla = (rubik.quarter_twists_names[movimiento], tupleNext)        
         try:
             siguientes.add(tupla)
         except Exception as e:
             print(e.args)
             pass
-    print(f"siguientes: {siguientes}")
+    print(f"siguientes: len()= {len(siguientes)} elements: {siguientes}")
+    print("Next_positions: Fin")
+    print()
     return siguientes
