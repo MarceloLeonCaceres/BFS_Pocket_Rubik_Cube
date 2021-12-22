@@ -11,12 +11,8 @@ def shortest_path(start, end):
     print()
     print(f"shortest_path: start: {start}")
     print(f"shortest_path: end: {end}")    
-
-    print()
-                                           
-                                                   
+    print()                                                                                              
                                                                                        
-
     path = []
     inicio = util.Node(start, None, None)
     print(f"Nodo inicio: {inicio.state}, {inicio.parent}, {inicio.action}")
@@ -85,11 +81,9 @@ def shortest_path(start, end):
         except Exception as e:
             print(e.args)
         
-
     return None
 
                                
-
 def next_positions(position):
     siguientes = set()
     print()
