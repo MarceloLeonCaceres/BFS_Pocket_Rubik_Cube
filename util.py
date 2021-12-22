@@ -27,6 +27,7 @@ class StackFrontier():
 
     def len(self):
         return len(self.frontier)
+    
 class QueueFrontier(StackFrontier):
 
     def remove(self):
