@@ -3,6 +3,8 @@ import util
 import sys
 from sortedcontainers import SortedList
 import utilEstado
+import os
+import time
 
 def shortest_path(start, end):
     """
@@ -10,11 +12,9 @@ def shortest_path(start, end):
     end_position. Returns a list of moves. 
     Assumes the rubik.quarter_twists move set.
     """
-    print()
-    print(f"shortest_path: sta: {start}")
-    print(f"shortest_path: end: {end}")    
-    print()                                                                                              
-                                                                                       
+
+    os.system('cls')
+    tic = time.perf_counter()
     path = []
     inicio = util.Node(start, None, None)
     print(f"Nodo inicio: {inicio.state}, {inicio.parent}, {inicio.action}")
@@ -30,29 +30,20 @@ def shortest_path(start, end):
     exploradosRegreso = SortedList()
 
     print()
-    print(f"frontierFIFO {frontierFIFO}")
-    print(f"explorados {explorados}")
-    print(f"path {path}")
     counter = 0
     SuperCounter = 0
-    print()
 
-    while frontierFIFO:
-        nodo = frontierFIFO.remove()        
-
+    while frontierFIFO:        
         SuperCounter += 1
-        print()
-        print(f"SuperCounter {SuperCounter}")
-        if SuperCounter == 6001:
-            print(f"explorados: {explorados.len()}     frontier ida: {frontierFIFO.len()}")
-            print(f"explorados Regreso: {exploradosRegreso.len()}     frontier regreso: {frontierRegreso.len()}")
-            return None
-        if frontierRegreso.contains_state(nodo.state):
-            print()
-            print(f"Encontro la solucion!!")            
+        # print(f"SuperCounter {SuperCounter}")
+        nodo = frontierFIFO.remove()            
+        # print(f"nodo.state: {nodo.state} \n")   
+
+        if frontierRegreso.contains_state(nodo.state):            
+            print(f"\nEncontro la solucion a la ida!!")            
             print(f"nodo.state: {nodo.state}")
-            print(f"nodo.action: {nodo.action}")
-            print()
+            print(f"nodo.action: {nodo.action} \n")
+            
             actions = []
             cells = []
             estadoComun = nodo.state
@@ -73,31 +64,38 @@ def shortest_path(start, end):
                 dupla = (rubik.movimiento_inverso(nodoRegreso.action), nodoRegreso.parent.state)
                 path.append(dupla)
                 nodoRegreso = nodoRegreso.parent   
+            toc = time.perf_counter()
+            print(f"Resuelto en {toc - tic:0.4f} segundos\n")   
             return actions
 
         try:
             explorados.add(utilEstado.Estado(nodo.state))
+            # print(f"explorados.add: {nodo.state}")  
             for action, state in next_positions(nodo.state):
-                print()
                 counter += 1
-                if counter == 16:
-                    print()
-                if counter == 20001:
-                    return None
+                # if counter == 20001:
+                #     return None
                 if not frontierFIFO.contains_state(state) and utilEstado.Estado(state) not in explorados:
                     child = util.Node(state=state, parent=nodo, action=action)
                     frontierFIFO.add(child)
-                print()
+                    # print(f"frontierFIFO.add: {state}")  
+            # print()
         except Exception as e:
             print(e.args)
         
-        nodoRegreso = frontierRegreso.remove()
+        
+
+        nodoRegreso = frontierRegreso.remove() 
+        counter += 1
+        # print(f"counter de regreso: {counter}")             
+        # print(f"nodoRegreso.state: {nodoRegreso.state}")    
         if frontierFIFO.contains_state(nodoRegreso.state):
             print()
             print(f"Encontro la solucion al regreso!!")              
             actions = []
             cells = []
             estadoComun = nodoRegreso.state
+            nodoComun = nodoRegreso
             nodo = frontierFIFO.retorna_nodo(estadoComun)
             while nodo.parent is not None:
                 actions.append(rubik.movimientos[nodo.action])
@@ -108,27 +106,28 @@ def shortest_path(start, end):
             actions.reverse()
             cells.reverse()
             path.reverse()
-            nodoRegreso = frontierRegreso.retorna_nodo(estadoComun)
+            # nodoRegreso = frontierRegreso.retorna_nodo(estadoComun)
+            nodoRegreso = nodoComun
             if nodoRegreso is not None:
                 while nodoRegreso.parent is not None:
                     actions.append(rubik.movimientos[rubik.movimiento_inverso(nodoRegreso.action)])
                     cells.append(nodoRegreso.parent.state)
                     dupla = (rubik.movimiento_inverso(nodoRegreso.action), nodoRegreso.parent.state)
                     path.append(dupla)
-                    nodoRegreso = nodoRegreso.parent            
+                    nodoRegreso = nodoRegreso.parent   
+            toc = time.perf_counter()
+            print(f"Resuelto en {toc - tic:0.4f} segundos\n")   
             return actions
         
         try:
-            exploradosRegreso.add(utilEstado.Estado(nodoRegreso.state))
+            exploradosRegreso.add(utilEstado.Estado(nodoRegreso.state))          
+            # print(f"exploradosRegreso.add: {nodoRegreso.state}")   
             for action, state in next_positions(nodoRegreso.state):
-                print()
-                counter += 1
-                if counter == 16:
-                    print()
                 if not frontierRegreso.contains_state(state) and utilEstado.Estado(state) not in exploradosRegreso:
                     child = util.Node(state=state, parent=nodoRegreso, action=action)
-                    frontierRegreso.add(child)
-                print()
+                    frontierRegreso.add(child)         
+                    # print(f"frontierRegreso.add: {state}")    
+            # print()
         except Exception as e:
             print(e.args)
     return None

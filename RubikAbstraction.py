@@ -222,7 +222,7 @@ def solve_puzzle(starting_faces):
         if check_rep(starting_faces)==False: return "Invalid color configuration, each\n color can only occurs 4 times."
         start=faces_to_list(starting_faces)
         ans=solver.shortest_path(start,I)
-        print(f"ans = {ans} ")             
+        # print(f"ans = {ans} ")             
     except:
         return "Invalid color configuration, please\n check the colors on your cube."
     lf=[]
@@ -231,11 +231,11 @@ def solve_puzzle(starting_faces):
         return "No solution"
     print()
     for p in ans:        
-        print(f"RubikAbastraction.py solve_puzzle() p in ans: {p}")
+        # print(f"RubikAbastraction.py solve_puzzle() p in ans: {p}")
         # ls.extend([quarter_twists_names[p]])
         ls.append(quarter_twists_names[p])
         print(f"ls: {ls}")
         start=perm_apply(p,start)
         lf.extend([list_to_faces(start)])
-        print(f"lf: {lf}")
+        # print(f"lf: {lf}")
     return [lf,ls]
