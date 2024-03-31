@@ -1,6 +1,8 @@
 import rubik
 import util
 import sys
+from sortedcontainers import SortedList
+import utilEstado
 
 def shortest_path(start, end):
     """
@@ -18,14 +20,14 @@ def shortest_path(start, end):
     print(f"Nodo inicio: {inicio.state}, {inicio.parent}, {inicio.action}")
     frontierFIFO = util.QueueFrontier()
     frontierFIFO.add(inicio)
-    explorados = []
+    explorados = SortedList()
 
     pathRegreso = []
     fin = util.Node(end, None, None)
     print(f"Nodo fin: {fin.state}, {fin.parent}, {fin.action}")
     frontierRegreso = util.QueueFrontier()
     frontierRegreso.add(fin)
-    exploradosRegreso = []
+    exploradosRegreso = SortedList()
 
     print()
     print(f"frontierFIFO {frontierFIFO}")
@@ -35,26 +37,21 @@ def shortest_path(start, end):
     SuperCounter = 0
     print()
 
-    # path.append(rubik.Ui)
-    # path.append(rubik.Fi)
-    # return path
-
     while frontierFIFO:
         nodo = frontierFIFO.remove()        
 
         SuperCounter += 1
         print()
         print(f"SuperCounter {SuperCounter}")
-        # print(f"nodo {nodo.state}, parent: {nodo.parent}, action: {nodo.action}")
-        # print(f"end: (string) {rubik.perm_to_string(end)}")
-        if SuperCounter == 5001:
+        if SuperCounter == 6001:
+            print(f"explorados: {explorados.len()}     frontier ida: {frontierFIFO.len()}")
+            print(f"explorados Regreso: {exploradosRegreso.len()}     frontier regreso: {frontierRegreso.len()}")
             return None
-        # if nodo.state == end or tuple(nodo.state) == tuple(end):
         if frontierRegreso.contains_state(nodo.state):
             print()
             print(f"Encontro la solucion!!")            
-            # print(f"nodo.state == end {nodo.state == end}")
-            # print(f"tuple(nodo.state) == tuple(end) {tuple(nodo.state) == tuple(end)}")
+            print(f"nodo.state: {nodo.state}")
+            print(f"nodo.action: {nodo.action}")
             print()
             actions = []
             cells = []
@@ -68,6 +65,7 @@ def shortest_path(start, end):
             actions.reverse()
             cells.reverse()
             path.reverse()
+            print(f"actions {actions}")
             nodoRegreso = frontierRegreso.retorna_nodo(estadoComun)
             while nodoRegreso.parent is not None:
                 actions.append(rubik.movimientos[rubik.movimiento_inverso(nodoRegreso.action)])
@@ -78,25 +76,16 @@ def shortest_path(start, end):
             return actions
 
         try:
-            explorados.append(nodo.state)
-            # print(f"explora2 {explorados}")
+            explorados.add(utilEstado.Estado(nodo.state))
             for action, state in next_positions(nodo.state):
                 print()
                 counter += 1
                 if counter == 16:
                     print()
-                print(f"counter {counter}: ")
-                # print(f"action: {action}, state{state}")
                 if counter == 20001:
                     return None
-                # if state in explorados:
-                #     print(f"Este ya esta explorado: {state}")
-                # elif frontierFIFO.contains_state(state): 
-                #     print(f"FrontierFIFO: {state}")
-                if not frontierFIFO.contains_state(state) and state not in explorados:
-                    # print(f"if not frontierFIFO.contains_state(state) ... len = {frontierFIFO.len()}")
+                if not frontierFIFO.contains_state(state) and utilEstado.Estado(state) not in explorados:
                     child = util.Node(state=state, parent=nodo, action=action)
-                    # print(f"child.state = {child.state} child.parent = {child.parent.state} child.action = {child.action}")
                     frontierFIFO.add(child)
                 print()
         except Exception as e:
@@ -130,52 +119,32 @@ def shortest_path(start, end):
             return actions
         
         try:
-            exploradosRegreso.append(nodoRegreso.state)
-            # print(f"explora2 {exploradosRegreso}")
+            exploradosRegreso.add(utilEstado.Estado(nodoRegreso.state))
             for action, state in next_positions(nodoRegreso.state):
                 print()
                 counter += 1
                 if counter == 16:
                     print()
-                # print(f"counter {counter}: ")
-                # print(f"action: {action}, state{state}")
-                
-                # if state in exploradosRegreso:
-                #     print(f"Este ya esta explorado: {state}")
-                # elif frontierRegreso.contains_state(state): 
-                #     print(f"frontierRegreso: {state}")
-                if not frontierRegreso.contains_state(state) and state not in exploradosRegreso:
-                    # print(f"if not frontierRegreso.contains_state(state) ... len = {frontierRegreso.len()}")
+                if not frontierRegreso.contains_state(state) and utilEstado.Estado(state) not in exploradosRegreso:
                     child = util.Node(state=state, parent=nodoRegreso, action=action)
-                    # print(f"child.state = {child.state} child.parent = {child.parent.state} child.action = {child.action}")
                     frontierRegreso.add(child)
                 print()
         except Exception as e:
             print(e.args)
     return None
 
-# Saludos desde github, website
-# Ahora estos saludos (linea 67 y siguientes) vienen del branch pcOficina
-# Los saludos de la línea 66 eran del branch master
 
 def next_positions(position):
     siguientes = set()
-    # print()
-    # print("Next_positions: Inicio")
-    # print(f"position: {position}")
     for movimiento in rubik.quarter_twists:
-        # print(f"movimiento: {rubik.quarter_twists_names[movimiento]}  ")
         next = rubik.perm_apply(movimiento, position)
         sNext = rubik.perm_to_string(next)
         tupleNext = tuple(next)        
-        # print(f"tupleNext: {tupleNext}")        
         tupla = (rubik.quarter_twists_names[movimiento], tupleNext)        
         try:            
             siguientes.add(tupla)
         except Exception as e:
             print(e.args)
             pass
-    # print(f"siguientes: len()= {len(siguientes)} elements: {siguientes}")
-    # print("Next_positions: Fin")
-    # print()
+
     return siguientes
